@@ -91,7 +91,7 @@
             color: white;
             border: none;
             margin-top: 20px;
-            position: absolute; /* Добавляем для кнопки "Мои товары" */
+            position: fixed; /* Добавляем для кнопки "Мои товары" */
             top: 20px; /* Располагаем кнопку вверху */
             right: 20px; /* Располагаем кнопку справа */
             z-index: 999; /* Устанавливаем z-index, чтобы кнопка была поверх других элементов */
@@ -215,21 +215,21 @@
         /* Медиазапрос для мобильных устройств */
         @media screen and (max-width: 767px) {
             .product {
-                width: calc(50% - 20px);
+                width: calc(100%);
             }
         }
 
         /* Медиазапрос для планшетов */
         @media screen and (min-width: 768px) and (max-width: 991px) {
             .product {
-                width: calc(33.33% - 20px);
+                width: calc(100%);
             }
         }
 
         /* Медиазапрос для небольших ноутбуков и больших экранов */
         @media screen and (min-width: 992px) {
             .product {
-                width: calc(25% - 20px);
+                width: calc(50%);
             }
         }
     </style>
