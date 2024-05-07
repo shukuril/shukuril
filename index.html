@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин одежды</title>
+    <style>
+        /* CSS стили */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+            position: relative; /* Добавляем для кнопки "Мои товары" */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .product {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            overflow: hidden;
+            width: calc(33.33% - 20px);
+            box-sizing: border-box;
+        }
+        .product img {
+            width: 100%; /* Ширина занимает всю доступную ширину блока */
+            height: 400px; /* Задаем фиксированную высоту, например, 200px */
+            object-fit: cover; /* Обрезаем изображения по размеру блока */
+        }
+
+        .product img.active {
+            display: block; /* Отображаем только активную фотографию */
+        }
+        .product-description {
+            margin-top: 10px;
+        }
+        .product-description h2 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+        .product-info label {
+            display: block;
+            margin-top: 10px;
+        }
+        .product-info select,
+        .product-info input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .product-info select {
+            margin-bottom: 10px;
+        }
+        .product-description p {
+            margin: 0;
+        }
+        .btn-more,
+        .btn-buy,
+        .btn-my-products {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn-more {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .btn-buy {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        .btn-my-products {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            margin-top: 20px;
+            position: absolute; /* Добавляем для кнопки "Мои товары" */
+            top: 20px; /* Располагаем кнопку вверху */
+            right: 20px; /* Располагаем кнопку справа */
+            z-index: 999; /* Устанавливаем z-index, чтобы кнопка была поверх других элементов */
+            padding: 10px 20px; /* Добавляем отступы */
+            border-radius: 5px; /* Добавляем скругление углов */
+            cursor: pointer; /* Добавляем стандартный указатель */
+        }
+        .btn-more:hover,
+        .btn-buy:hover,
+        .btn-my-products:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        .btn-more:focus,
+        .btn-buy:focus,
+        .btn-my-products:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%; /* Ширина модального окна - 50% ширины экрана */
+            max-width: 400px; /* Максимальная ширина модального окна */
+            height: auto; /* Автоматическая высота модального окна */
+            max-height: 80%; /* Максимальная высота модального окна - 80% высоты экрана */
+            overflow-y: auto; /* Добавляем прокрутку, если контент модального окна переполняет его высоту */
+            border-radius: 8px;
+            position: relative;
+        }
+        .modal-content img {
+            max-width: 100%; /* Устанавливаем максимальную ширину изображения в модальном окне на 100% ширины контейнера */
+            max-height: 300px; /* Устанавливаем максимальную высоту изображения в модальном окне */
+            object-fit: contain; /* Растягиваем изображение внутри своего контейнера без искажений */
+            margin: 0 auto; /* Центрируем изображение по горизонтали */
+            display: block; /* Делаем изображение блочным элементом, чтобы применить отступы */
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .product-info {
+            margin-top: 20px;
+        }
+        .btn-buy:hover {
+            background-color: #45a049;
+        }
+        .my-products-container {
+            position: fixed;
+            top: 60px; /* Выравниваем контейнер под кнопкой "Мои товары" */
+            right: 20px;
+            background-color: #fefefe;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            display: none; /* По умолчанию контейнер скрыт */
+            z-index: 999; /* Устанавливаем z-index, чтобы контейнер был поверх остальных элементов */
+            max-height: 80%; /* Максимальная высота контейнера */
+            overflow-y: auto; /* Добавляем прокрутку, если контент контейнера переполняет его высоту */
+            width: 300px; /* Ширина контейнера */
+        }
+        .my-products-container h2 {
+            margin-top: 0;
+        }
+        .close-my-products {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-my-products:hover,
+        .close-my-products:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #my-products-list {
+            padding: 0;
+            list-style-type: none;
+        }
+        #my-products-list li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="product" data-product-id="1">
+            <img src="/теле-сайт/img/img1.jpeg" alt="Product 1">
+            <div class="product-description">
+                <h2>Футболка</h2>
+                <p>Описание футболки...</p>
+            </div>
+            <button class="btn-more" data-modal-id="modal1">Подробнее</button>
+        </div>
+        <!-- Добавьте другие продукты здесь по аналогии -->
+    </div>
+
+    <div class="container">
+        <div class="product" data-product-id="2">
+            <img src="/теле-сайт/img/img2.jpeg" alt="Product 2">
+            <div class="product-description">
+                <h2>Футболка</h2>
+                <p>Описание футболки...</p>
+            </div>
+            <button class="btn-more" data-modal-id="modal2">Подробнее</button>
+        </div>
+        <!-- Добавьте другие продукты здесь по аналогии -->
+    </div>
+
+    <div class="container">
+        <div class="product" data-product-id="3">
+            <img src="/теле-сайт/img/img3.jpeg" alt="Product 3">
+            <div class="product-description">
+                <h2>Футболка</h2>
+                <p>Описание футболки...</p>
+            </div>
+            <button class="btn-more" data-modal-id="modal3">Подробнее</button>
+        </div>
+        <!-- Добавьте другие продукты здесь по аналогии -->
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Футболка</h2>
+            <img src="/теле-сайт/img/img1.jpeg" alt="Product 1">
+            <div class="product-info">
+                <label for="quantity1">Количество:</label>
+                <input type="number" id="quantity1" value="1" min="1">
+                <label for="color1">Цвет:</label>
+                <select id="color1">
+                    <option value="red">Красный</option>
+                    <option value="blue">Синий</option>
+                    <option value="green">Зеленый</option>
+                </select>
+                <p id="total-price1">$100</p>
+                <button class="btn-buy">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Джинсы</h2>
+            <img src="/теле-сайт/img/img2.jpeg" alt="Product 2">
+            <div class="product-info">
+                <label for="quantity2">Количество:</label>
+                <input type="number" id="quantity2" value="1" min="1">
+                <label for="color2">Цвет:</label>
+                <select id="color2">
+                    <option value="blue">Синий</option>
+                    <option value="black">Черный</option>
+                    <option value="grey">Серый</option>
+                </select>
+                <p id="total-price2">$100</p>
+                <button class="btn-buy">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal3" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Джинсы</h2>
+            <img src="/теле-сайт/img/img3.jpeg" alt="Product 3">
+            <div class="product-info">
+                <label for="quantity2">Количество:</label>
+                <input type="number" id="quantity3" value="1" min="1">
+                <label for="color2">Цвет:</label>
+                <select id="color3">
+                    <option value="blue">Синий</option>
+                    <option value="black">Черный</option>
+                    <option value="grey">Серый</option>
+                </select>
+                <p id="total-price3">$100</p>
+                <button class="btn-buy">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка "Мои товары" -->
+    <button class="btn-my-products">Мои товары</button>
+
+    <!-- Контейнер для отображения купленных товаров -->
+    <div class="my-products-container">
+        <span class="close-my-products">&times;</span>
+        <h2>Мои товары</h2>
+        <ul id="my-products-list"></ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnsMore = document.querySelectorAll('.btn-more');
+            const modals = document.querySelectorAll('.modal');
+            const closeModal = document.querySelectorAll('.close');
+
+            btnsMore.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modalId = btn.getAttribute('data-modal-id');
+                    const modal = document.getElementById(modalId);
+                    modal.style.display = 'block';
+                });
+            });
+
+            modals.forEach(modal => {
+                modal.querySelector('.close').addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            });
+
+            window.addEventListener('click', (event) => {
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        const btnsMore = document.querySelectorAll('.btn-more');
+        const modal = document.getElementById('modal');
+        const quantityInput = document.getElementById('quantity');
+        const colorSelect = document.getElementById('color');
+        const totalPrice = document.getElementById('total-price');
+        const btnBuy = document.querySelector('.btn-buy');
+        const btnMyProducts = document.querySelector('.btn-my-products');
+        const myProductsContainer = document.querySelector('.my-products-container');
+        const myProductsList = document.getElementById('my-products-list');
+        let myProducts = [];
+
+        btnsMore.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const product = btn.closest('.product');
+                const productId = product.dataset.productId;
+                const productName = product.querySelector('.product-description h2').textContent;
+                const productImageSrc = product.querySelector('img').src;
+
+                modal.style.display = 'block';
+            });
+        });
+
+        closeModal.forEach(close => {
+            close.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        quantityInput.addEventListener('input', () => {
+            updateTotalPrice();
+        });
+
+        colorSelect.addEventListener('change', () => {
+            updateTotalPrice();
+        });
+
+        function updateTotalPrice() {
+            const pricePerItem = 100;
+            const quantity = quantityInput.value;
+            const color = colorSelect.value;
+            totalPrice.textContent = `$${pricePerItem * quantity}`;
+        }
+
+        btnBuy.addEventListener('click', () => {
+            const productName = document.querySelector('.modal-content h2').textContent;
+            const quantity = quantityInput.value;
+            const color = colorSelect.value;
+            const totalPriceValue = totalPrice.textContent;
+            const newItem = { productName, quantity, color, totalPriceValue };
+            myProducts.push(newItem);
+            updateMyProductsList();
+            modal.style.display = 'none';
+        });
+
+        btnMyProducts.addEventListener('click', () => {
+            myProductsContainer.style.display = 'block';
+        });
+
+        document.querySelector('.close-my-products').addEventListener('click', () => {
+            myProductsContainer.style.display = 'none';
+        });
+
+        function updateMyProductsList() {
+            myProductsList.innerHTML = '';
+            myProducts.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.quantity} x ${item.productName} (${item.color}) - ${item.totalPriceValue}`;
+                myProductsList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
