@@ -379,6 +379,25 @@
                 });
             });
 
+
+// Обработчики событий для кнопок "Купить"
+const btnBuy = document.querySelectorAll('.btn-buy');
+btnBuy.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const productName = btn.parentElement.querySelector('h2').textContent;
+        const quantity = btn.parentElement.querySelector('input[type="number"]').value;
+        const color = btn.parentElement.querySelector('select').value;
+        const pricePerItem = 100;
+        const totalPriceValue = `$${pricePerItem * quantity}`;
+        const newItem = { productName, quantity, color, totalPriceValue };
+        myProducts.push(newItem);
+        updateMyProductsList();
+        const modal = btn.closest('.modal');
+        modal.style.display = 'none';
+    });
+});
+
+
             // Обработчик события для кнопки "Мои товары"
             btnMyProducts.addEventListener('click', () => {
                 myProductsContainer.style.display = 'block';
