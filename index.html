@@ -367,7 +367,7 @@
             // Обработчики событий для кнопок "Закрыть"
             modals.forEach(modal => {
                 modal.querySelector('.close').addEventListener('click', () => {
-                    modal.style.display = 'none';
+                    modal.style.display = 'block';
                 });
             });
 
@@ -415,6 +415,15 @@
                 myProductsList.appendChild(li);
             });
         }
+
+        let data = {
+            productName: productName,
+            quantity: quantity,
+            color: color,
+            pricePerItem: pricePerItem,
+            newItem: newItem
+        }
+        tg.sendData(JSON.stringify(data));
     </script>
 </body>
 </html>
